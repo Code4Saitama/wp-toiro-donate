@@ -131,9 +131,9 @@ function donate_menu_index() {
 			'update_date' => '2021-11-10',
 		),
 	);
-	+/
+	*/
 	// phpcs:enable
-	$query = "SELECT * FROM  wp_donate_project WHERE del_flag = 0;
+	$query = "SELECT * FROM  wp_donate_project WHERE del_flag = 0";
 	$results = $wpdb->get_results( $wpdb->prepare( $query, 1, $type ) );
 	foreach($results as $row) {
 	   $id = $row->id;
@@ -143,10 +143,11 @@ function donate_menu_index() {
 	   $create_date = $row->create_date;
 	   $update_date = $row->update_date;
 
+		
  		echo '<tr>';
 		echo '<td>';
-		echo '<input type="checkbox" name='"del_id_ .  esc_url($id) . '"  id="'  .   esc_url($id) .  '"/>';
 		echo '</td>';
+		echo '<input type="checkbox" name="del_id_' .  ($id) . '"  id="'  .   ($id) .  '"/>';
 		echo '<td>';
 		echo esc_url( ++$i );
 		echo '</td>';
@@ -171,12 +172,12 @@ function donate_menu_index() {
 	echo '</table></form></div>';
 }
 
-add_action( 'admin_init', 'donate_sumbit' );
+//add_action( 'admin_init', 'donate_sumbit' );
 
 /**
  *  Aaaa
  */
-function donate_sumit() {
+function donate_sumbit() {
 	// TODO: 入力データの妥当性の判断
 	// TODO: DBへの登録.
 }
