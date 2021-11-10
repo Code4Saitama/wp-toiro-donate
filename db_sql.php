@@ -25,13 +25,24 @@ function sql_donate_price(){
     $sql_drop  = "DROP TABLE IF EXISTS wp_donate_price;";
     $sql_create = "
     CREATE TABLE  wp_donate_price (
-        id  bigint  unsigned auto_increment not null primary key,
+        id bigint  unsigned auto_increment not null primary key,
         donate_project_id  bigint,
+        payment_id  bigint,
+        donor_email varchar(100),
+        donor_name varchar(20),
+        donor_zip varchar(20),
+        donor_address varchar(200),
+        donor_tel varchar(20),
+        token varchar(200),
         price integer,
-        description text,
+        tax integer,
+        charge integer,
+        payment_date datetime,
         del_flag boolean default 0 not null,
-        crate_date datetime,
-        update_date datetime
+        creator varchar(20), 
+        create_date datetime  DEFAULT CURRENT_TIMESTAMP,
+        moderator varchar(20),
+        update_date datetime  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP   
     );
     ";
 

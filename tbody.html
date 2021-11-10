@@ -1,0 +1,42 @@
+<form id='donate-project-list_%ID%' method='post' onsubmit="return del_onClick('%ID%')">
+<tr>
+    <td>
+        <input type="hidden" name="id" value="%ID%">
+        <input type="hidden" name="row" value="1">
+    </td>    
+    <td>
+        <div>%I%</div>
+    </td>
+    <td>
+        <div>%PROJECT_CODE%</div><input type='hidden' id='project_code_%ID%' name='project_code' value='%PROJECT_CODE%'>
+    </td>
+    <td>
+        <div>%PROJECT_NAME%</div><input type='hidden' id='project_name_%ID%' name='project_name' value='%PROJECT_NAME%'>
+    </td>
+    <td>
+        <div>%DESCRIPTION%</div><input type='hidden' id='description_%ID%' name='description' value='%DESCRIPTION%'>
+    </td>
+    <td>
+        <div>%URL01%</div><input type='hidden' id='url01_%ID%' name='url01' value='%URL01%'>
+    </td>
+    <td>
+        <div>%URL02%</div><input type='hidden' id='url02_%ID%' name='url02' value='%URL02%'>
+    </td>
+    <td>
+        <div>%THUMBNAIL%</div><input type='hidden' id='thumbnail_%ID%' name='thumbnail' value='%THUMBNAIL%'>
+    </td>
+    <td>
+        <div>%LOGO%</div><input type='hidden' id='logo_%ID%' name='logo' value='%LOGO%'>
+    </td>
+    <td>
+        <div>%CREATE_DATE%</div>
+    </td>    
+    <td>
+        <div>%UPDATE_DATE%</div>
+    </td>
+    <td>
+        <input  type="button" value="編集" onclick="tbl_onClick('%ID%')">
+        <input  type="submit" value="削除" >
+    </td>
+</tr>
+</form>
