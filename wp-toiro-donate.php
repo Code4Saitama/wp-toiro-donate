@@ -32,7 +32,7 @@ function donate_add_pages() {
 		'read',
 		$my_plugin_slug,
 		'donate_menu_index',
-		plugins_url( '/images/logo.png', __FILE__ )
+		plugins_url( '/images/donate.png', __FILE__ )
 	);
 
 	add_submenu_page(
@@ -75,100 +75,53 @@ function donate_add_pages() {
  * メニュー本体
  */
 function donate_menu_index() {
-	?>
-	<div class='wrap'>
-		<h2>寄付プロジェクト登録</h2>
-		<form id='donate-project-form' action=''>
-			<?php wp_nonce_field( 'donate-nonce-key', 'donate-project' ); ?>
-			<div class='form-left'>プロジェクトコード</div>
-			<div class='form-right'><input type='text' name='project_code'></div>
-			<div class='from-left'>プロジェクト名</div>
-			<dif class='form-right'><input type='text' name='project_name'></div>
-			<div class='form-left'>プロジェクトの説明</div>
-			<div class='form-right'><textarea name='description'></textarea></div>
-			<input type='submit' text='Save'>
-		</form>
-	</div>
-	<div class='wrap'>
-	<form id='' acction="">
-	<table class='projects' style='border: 1px solid black'>
-		<tr>
-			<th><br></th>
-			<th>no</th>
-			<th>プロジェクトコード</th>
-			<th>プロジェクト名</th>
-			<th>プロジェクトの説明</th>
-			<th>登録日</th>
-			<th>最終更新日</th>
-		</tr>
+	global $wpdb;
+	$dir = plugin_dir_path( __FILE__ );
+	$form_file = $dir . "/form.html"; 
+	$tbody_file = $dir . "/tbody.html";
+	$tbody_tpl = file_get_contents($tbody_file);
+	$main = file_get_contents($form_file);
+	$tbody = "";
 
-	<?php
-	// phpcs:disable Array double arrow not aligned correctly
-	/*
-	$arr = array(
-		array(
-			'id' => 1,
-			'project_code' => 'prj001',
-			'project_name' => 'プロジェクト001',
-			'description' => 'プロジェクトの説明文',
-			'create_date' => '2021-10-30',
-			'update_date' => '2021-11-03',
-		),
-		array(
-			'id' => 2,
-			'project_code' => 'prj002',
-			'project_name' => 'プロジェクト002',
-			'description' => 'プロジェクトの説明文',
-			'create_date' => '2021-10-31',
-			'update_date' => '2021-11-02',
-		),
-		array(
-			'id' => 3,
-			'project_code' => 'prj003',
-			'project_name' => 'プロジェクト003',
-			'description' => 'プロジェクトの説明文',
-			'create_date' => '2021-11-03',
-			'update_date' => '2021-11-10',
-		),
-	);
-	+/
-	// phpcs:enable
-	$query = "SELECT * FROM  wp_donate_project WHERE del_flag = 0;
-	$results = $wpdb->get_results( $wpdb->prepare( $query, 1, $type ) );
-	foreach($results as $row) {
-	   $id = $row->id;
-	   $project_code = $row->project_code;
-	   $project_name = $row->project_name;
-	   $description = $row->description;
-	   $create_date = $row->create_date;
-	   $update_date = $row->update_date;
-
- 		echo '<tr>';
-		echo '<td>';
-		echo '<input type="checkbox" name='"del_id_ .  esc_url($id) . '"  id="'  .   esc_url($id) .  '"/>';
-		echo '</td>';
-		echo '<td>';
-		echo esc_url( ++$i );
-		echo '</td>';
-		echo '<td>';
-			echo esc_url( $project_code );
-		echo '</td>';
-		echo '<td>';
-			echo esc_url( $project_name );
-		echo '</td>';
-		echo '<td>';
-			echo esc_url( $description );
-		echo '</td>';
-		echo '<td>';
-			echo esc_url( $create_date );
-		echo '</td>';
-		echo '<td>';
-			echo esc_url( $update_date );
-		echo '</td>';
-		echo '</tr>';
-
+	try {
+		$query = "SELECT * FROM  wp_donate_project WHERE del_flag = 0";
+		$results = $wpdb->get_results( $query );
+	} catch (Exception $e) {
+		echo '捕捉した例外: ',  $e->getMessage(), "\n";
 	}
-	echo '</table></form></div>';
+
+	if  (!is_null( $results ))  {
+		$i=0;
+		foreach($results as $row) {
+			$id = $row->id;
+			$project_code = $row->project_code;
+			$project_name = $row->project_name;
+			$description = $row->description;
+			$url01 = $row->url01;
+			$url02 = $row->url02;
+			$thumbnail = $row->thumbnail;
+			$logo = $row->logo;
+			$create_date = $row->create_date;
+			$update_date = $row->update_date;
+
+			$row_data = $tbody_tpl;
+			$row_data = str_replace('%I%', ++$i, $row_data);
+			$row_data = str_replace('%ID%', $id, $row_data);
+			$row_data = str_replace('%PROJECT_CODE%', $project_code, $row_data);
+			$row_data = str_replace('%PROJECT_NAME%', $project_name, $row_data);
+			$row_data = str_replace('%DESCRIPTION%', $description, $row_data);
+			$row_data = str_replace('%URL01%', $url01, $row_data);
+			$row_data = str_replace('%URL02%', $url02, $row_data);
+			$row_data = str_replace('%THUMBNAIL%', $thumbnail, $row_data);
+			$row_data = str_replace('%LOGO%', $logo, $row_data);
+			$row_data = str_replace('%CREATE_DATE%', $create_date, $row_data);
+			$row_data = str_replace('%UPDATE_DATE%', $update_date, $row_data);
+			$tbody .= $row_data;
+			
+		}
+	}
+	$main = str_replace("%TBODY%", $tbody, $main);
+	echo $main;	
 }
 
 add_action( 'admin_init', 'donate_sumbit' );
@@ -176,23 +129,84 @@ add_action( 'admin_init', 'donate_sumbit' );
 /**
  *  Aaaa
  */
-function donate_sumit() {
+function donate_sumbit() {
 	// TODO: 入力データの妥当性の判断
 	// TODO: DBへの登録.
+	global $wpdb;
+	if (isset($_POST["row"]) && $_POST["row"] == "1"){
+		$id = $_POST["id"];
+		$wpdb->update(
+			"wp_donate_project",
+			array(
+				"del_flag" => 1,
+				'moderator' => get_current_user_id(),
+				'update_date' => current_time('mysql'),
+			),
+			array( 'ID' =>  $id ), 
+		);
+
+
+	} elseif (isset($_POST["form"]) && (isset($_POST['project_code']) || isset($_POST['project_name']))){
+		$project_code = $wpdb->esc_sql($_POST['project_code']);
+		$project_name = $wpdb->esc_sql($_POST['project_name']);
+		$description = $wpdb->esc_sql($_POST['description']);
+		$url01 = $wpdb->esc_sql($_POST['url01']);
+		$url02 = $wpdb->esc_sql($_POST['url02']);
+		$thumbnail = $wpdb->esc_sql($_POST['thumbnail']);
+		$creator = get_current_user_id();
+		$create_date = current_time('mysql');
+		$moderator = get_current_user_id();
+		$update_date = current_time('mysql');
+		
+
+		if (!empty($_POST["id"])){
+			$id = $_POST["id"];
+			$wpdb->update(
+				"wp_donate_project",
+				array(
+					'project_code' => $project_code,
+					'project_name' => $project_name,
+					'description' => $description,
+					'url01' => $url01,
+					'url02' => $url02,
+					'thumbnail' => $thumbnail,
+					'moderator' => get_current_user_id(),
+					'update_date' => current_time('mysql'),
+				),
+				array( 'ID' =>  $id ), 
+			);
+		}else{
+			$wpdb->insert( 
+				"wp_donate_project",
+				array(
+					'project_code' => $project_code,
+					'project_name' => $project_name,
+					'description' => $description,
+					'url01' => $url01,
+					'url02' => $url02,
+					'thumbnail' => $thumbnail,
+					'creator' => get_current_user_id(),
+					'create_date' => current_time('mysql'),
+					'moderator' => get_current_user_id(),
+					'update_date' => current_time('mysql'),
+				)
+			);
+		}
+	}
 }
 
 /**
  * Aaa
  */
 function donate_submenu_page1() {
-	echo '<h2>「サブメニュー1」をクリックした時に表示される内容</h2>';
+	echo '<h2>寄付確認</h2>';
 }
 
 /**
  * Baa
  */
 function donate_submenu_page2() {
-	echo '<h2>「サブメニュー2」をクリックした時に表示される内容</h2>';
+	echo '<h2>寄付データエクスポート</h2>';
 }
 
 /**

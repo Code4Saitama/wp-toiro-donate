@@ -1,0 +1,99 @@
+<style>
+    .projects table, .projects th, .projects td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+</style>
+<div class="wrap">
+    <h2>寄付プロジェクト登録</h2>
+    <form action="" method="post" id="donate-form">
+        <input type="hidden" name="form" value="1">
+        <input type="hidden" name="id"> 
+        <div class='form-left'>プロジェクトコード</div>
+        <div class='form-right'>
+            <input type='text' name='project_code'>
+        </div>
+        <div class='from-left'>プロジェクト名</div>
+        <div class='form-right'>
+            <input type='text' name='project_name'>
+        </div>
+        <div class='form-left'>プロジェクトの説明</div>
+        <div class='form-right'>
+            <textarea name='description'></textarea>
+        </div>
+        <div class='from-left'>url01</div>
+        <div class='form-right'>
+            <input type='text' name='url01'>
+        </div>
+        <div class='from-left'>url02</div>
+        <div class='form-right'>
+            <input type='text' name='url02'>
+        </div>
+        <div class='from-left'>サムネイル画像</div>
+        <div class='form-right'>
+            <input type='file' name='thumbnail'>
+        </div>
+        <div class='from-left'>プロジェクトロゴ画像</div>
+        <div class='form-right'>
+            <input type='file' name='logo'>
+        </div>
+        <input type='submit' text='保存'>
+    </form>
+
+    <hr>
+
+    <table class='projects'>
+        <thead>
+        <tr>
+            <th><br></th>
+            <th>no</th>
+            <th>プロジェクトコード</th>
+            <th>プロジェクト名</th>
+            <th>プロジェクトの説明</th>
+            <th class='from-left'>url01</th>
+            <th class='from-left'>url02</th>
+            <th class='from-left'>サムネイル画像</th>
+            <th class='from-left'>プロジェクトロゴ画像</th>
+            <th>登録日</th>
+            <th>最終更新日</th>
+            <th><br></th>
+        </tr>
+        </thead>
+        <tbody>
+            %TBODY%
+        </tbody>
+</div>
+<script>
+    function tbl_onClick(id){
+        project_code = jQuery("#project_code_" + id).val();
+        project_name = jQuery("#project_name_" + id).val();
+        desciption = jQuery("#desciption_" + id).val();
+        url01 = jQuery("#url01_" + id).val();
+        url02 = jQuery("#url02_" + id).val();
+        thumbnail = jQuery("#thumbnail_" + id).val();
+        logo = jQuery("#logo_" + id).val();
+
+        jQuery("#donate-form [name=id]").val(id);
+        jQuery("#donate-form [name=project_code]").val(project_code);
+        jQuery("#donate-form [name=project_name]").val(project_name);
+        jQuery("#donate-form [name=desciption]").val(desciption);
+        jQuery("#donate-form [name=url01]").val(url01);
+        jQuery("#donate-form [name=url02]").val(url02);
+        jQuery("#donate-form [name=thumbnail]").val(thumbnail);
+        jQuery("#donate-form [name=logo]").val(logo);
+
+
+        console.log(project_code);
+        return false;
+    }
+
+    function del_onClick (id) {
+        let result = confirm('削除しますか');
+        if(result){
+            return true;
+        }else{
+            return false;
+        }
+    }
+</script>
