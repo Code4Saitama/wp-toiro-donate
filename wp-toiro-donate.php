@@ -147,12 +147,12 @@ function donate_sumbit() {
 
 
 	} elseif (isset($_POST["form"]) && (isset($_POST['project_code']) || isset($_POST['project_name']))){
-		$project_code = $wpdb->esc_sql($_POST['project_code']);
-		$project_name = $wpdb->esc_sql($_POST['project_name']);
-		$description = $wpdb->esc_sql($_POST['description']);
-		$url01 = $wpdb->esc_sql($_POST['url01']);
-		$url02 = $wpdb->esc_sql($_POST['url02']);
-		$thumbnail = $wpdb->esc_sql($_POST['thumbnail']);
+		$project_code = ($_POST['project_code']);
+		$project_name = ($_POST['project_name']);
+		$description = ($_POST['description']);
+		$url01 = ($_POST['url01']);
+		$url02 = ($_POST['url02']);
+		$thumbnail = ($_POST['thumbnail']);
 		$creator = get_current_user_id();
 		$create_date = current_time('mysql');
 		$moderator = get_current_user_id();
