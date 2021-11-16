@@ -2,7 +2,7 @@
 
  class DonateTable {
     //プラグインのテーブル名
-	var $donate_db_version = '1.0';
+	var $donate_db_version = '1.1';
 	var $table_name;
 
     public function __construct()
@@ -55,6 +55,7 @@
 				price integer,
 				tax integer,
 				charge integer,
+				payment_type bigint,
 				payment_date datetime,
 				del_flag boolean default 0 not null,
 				creator varchar(20), 

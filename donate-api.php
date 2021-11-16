@@ -1,6 +1,4 @@
 <?php
-
-
 add_action( 'rest_api_init', 'add_custom_endpoint' );
 
 function add_custom_endpoint() {
@@ -98,8 +96,6 @@ function post_projects($data){
 		//更新
 		$id = $data["id"];
 		$updates = array();
-		print("json: ");
-		print_r($json);
 		if (is_array($json[0])){
 			$json = $json[0];
 		}
@@ -130,9 +126,8 @@ function post_projects($data){
 		$lastid = $id;
 		$query = "SELECT * FROM  wp_donate_project WHERE del_flag = 0 and id=%d";
 		$res = $wpdb->get_results( $wpdb->prepare( $query, $lastid) );
-		print_r($res);
-		array_push($results, $res[0]);				
-}else{
+		array_push($results, $res[0]);
+	}else{
 		//追加
 		if (is_array($json[0])){
 			foreach ($json as $k => $v){
@@ -212,8 +207,7 @@ function put_projects($data){
 
 }
 
-function get_Fields($table){
-
+function get_donate_Fields($table){
 	global $wpdb;
 	
 	$sql = "select COLUMN_NAME from information_schema.COLUMNS where table_name = '$table' and COLUMN_NAME not in ( 'id', 'del_flag')";
@@ -225,11 +219,10 @@ function get_Fields($table){
 	return $fields;
 }
 
-
 function get_donates(){
 	global $wpdb;
 	
-	$fields = get_Fields("wp_donate");
+	$fields = get_donate_Fields("wp_donate");
 
 
 	$query = "SELECT * FROM  wp_donate WHERE del_flag = 0";
@@ -241,10 +234,13 @@ function get_donates(){
 	return $response;
 }
 
+
 function post_donates($data){
+	$table_name = "wp_donate";
+
 	$header = $data->get_headers();
 	$json = $data->get_params();
-	$fields = get_fields("wp_donate");
+	$fields = get_donate_Fields($table_name);
 
 	$results = array();
 
@@ -274,9 +270,8 @@ function post_donates($data){
 		$lastid = $id;
 		$query = "SELECT * FROM  wp_donate WHERE del_flag = 0 and id=%d";
 		$res = $wpdb->get_results( $wpdb->prepare( $query, $lastid) );
-		print_r($res);
-		array_push($results, $res[0]);				
-}else{
+		array_push($results, $res[0]);
+	}else{
 		//追加
 		if (is_array($json[0])){
 			foreach ($json as $k => $v){
@@ -311,8 +306,9 @@ function post_donates($data){
 		}else{
 			$inserts = array(); 
 			foreach ($fields as $f){
+				
 				if (isset($json[$f]) && !empty($json[$f])){
-					$inserts[$f] = $v[$f];
+					$inserts[$f] = $json[$f];
 				}else{
 					$inserts[$f] = null;
 				}
@@ -322,16 +318,16 @@ function post_donates($data){
 			$inserts['create_date'] = current_time('mysql');
 			$inserts['moderator'] = get_current_user_id();
 			$inserts['update_date'] = current_time('mysql');
-	
-			if (empty($inserts["project_id"])){
+
+			if (empty($inserts["donate_project_id"])){
 				//DBに登録しない
 			}else{
 				$wpdb->insert( 
-					"wp_donate_project",
+					$table_name,
 					$inserts
 				);
 				$lastid = $wpdb->insert_id;
-				$query = "SELECT * FROM  wp_donate WHERE del_flag = 0 and id=%d";
+				$query = "SELECT * FROM  $table_name WHERE del_flag = 0 and id=%d";
 				$res = $wpdb->get_results( $wpdb->prepare( $query, $lastid) );
 			
 				array_push($results, $res[0]);
