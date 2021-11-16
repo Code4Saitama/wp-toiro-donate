@@ -1,16 +1,4 @@
 <?php
-/**
- * Plugin Name:     Wp Toiro Donate
- * Plugin URI:      https://wwww.github.com/
- * Description:     Torio Donataion
- * Author:          MapQuest Solutions LLC.
- * Author URI:      http://www.github.com/mq-sol/
- * Text Domain:     wp-toiro-donate
- * Domain Path:     /languages
- * Version:         0.1.0
- *
- * @package         Wp_Toiro_Donate
- */
 
  class DonateTable {
     //プラグインのテーブル名
