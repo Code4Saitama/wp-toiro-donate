@@ -63,11 +63,57 @@ function add_custom_endpoint() {
 			'methods' => 'POST',
 			'callback' => 'post_donates'
 		)
-	);	
+	);
+
 }
+
+function get_apikey(){
+	$api_key = get_option("donate_apikey", "");
+	return $api_key;
+}
+
+function header_check($data){
+	$header = $data->get_headers();
+	$api_key = get_apikey();
+	
+	if (isset($header["x_api_key"])){
+		$post_api_key = $header["x_api_key"][0];
+		print_r($post_api_key);
+		if ($post_api_key == $api_key){
+			return array(
+				"result" => true,
+				"message" => ""
+			);
+		}else{
+			return array(
+				"result" => false,
+				"message" => "Wrong API Key. $api_key => $post_api_key"
+			);
+		}
+	}else{
+		return array(
+			"result" => false,
+			"message" => "No API Header."
+		);
+	}
+}
+
 
 function get_projects($data){
 	global $wpdb;
+
+	$header_check = header_check($data);
+	if (!$header_check["result"]){
+		$results = array(
+			"message" => $header_check["message"]
+		);
+		$response = new WP_REST_Response($results);
+		$response->set_status(400);
+		$domain = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"];
+		$response->header( 'Location', $domain );
+		return $response;
+	}
+	
 
 	if (isset($data["id"])){
 		$query = "SELECT * FROM  wp_donate_project WHERE del_flag = 0 and id=%d";
@@ -87,6 +133,18 @@ function get_projects($data){
 function post_projects($data){
 	$header = $data->get_headers();
 	$json = $data->get_params();
+
+	$header_check = header_check($data);
+	if (!$header_check["result"]){
+		$results = array(
+			"message" => $header_check["message"]
+		);
+		$response = new WP_REST_Response($results);
+		$response->set_status(400);
+		$domain = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"];
+		$response->header( 'Location', $domain );
+		return $response;
+	}
 
 	$results = array();
 
@@ -237,6 +295,18 @@ function get_donates(){
 
 function post_donates($data){
 	$table_name = "wp_donate";
+
+	$header_check = header_check($data);
+	if (!$header_check["result"]){
+		$results = array(
+			"message" => $header_check["message"]
+		);
+		$response = new WP_REST_Response($results);
+		$response->set_status(400);
+		$domain = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"];
+		$response->header( 'Location', $domain );
+		return $response;
+	}
 
 	$header = $data->get_headers();
 	$json = $data->get_params();

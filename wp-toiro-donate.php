@@ -26,6 +26,17 @@ add_action( 'admin_menu', 'donate_add_pages' );
 function donate_add_pages() {
 	$my_plugin_slug = plugin_basename( __FILE__ );
 
+	/*
+	add_menu_page(
+		$page_title　：　ページタイトル（title）,
+		$menu_title　：　メニュータイトル,
+		$capability　：　メニュー表示するユーザーの権限,
+		$menu_slug,　：　メニューのスラッグ,
+		$function,　：　メニュー表示時に使われる関数,
+		$icon_url,　：　メニューのテキスト左のアイコン,
+		$position 　：　メニューを表示する位置;
+	);
+	*/
 	// トップレベルにオリジナルのメニューを追加.
 	add_menu_page(
 		'寄付管理',
@@ -36,12 +47,23 @@ function donate_add_pages() {
 		plugins_url( '/images/donate.png', __FILE__ )
 	);
 
+	/*
+	add_submenu_page( 
+		$parent_slug, 
+		$page_title, 
+		$menu_title, 
+		$capability, 
+		$menu_slug, 
+		$function
+	);
+	*/
+
 	add_submenu_page(
 		$my_plugin_slug,
-		'寄付管理',
+		'寄付プロジェクト登録',
 		'寄付プロジェクト登録',
 		'read',
-		$my_plugin_slug,
+		'project',
 		'donate_menu_index'
 	);
 
@@ -49,8 +71,8 @@ function donate_add_pages() {
 		$my_plugin_slug,
 		'寄付確認',
 		'寄付確認',
-		'moderate_comments',
-		'submenu-1',
+		'read',
+		'donate',
 		'donate_submenu_page1'
 	);
 
@@ -58,18 +80,23 @@ function donate_add_pages() {
 		$my_plugin_slug,
 		'寄付エクスポート',
 		'寄付エクスポート',
-		'manage_options',
-		'submenu-2',
+		'read',
+		'exprot',
 		'donate_submenu_page2'
 	);
 
-	add_options_page(
-		'マイオプション',
-		'マイオプション',
-		'manage_options',
-		'donate-options-submenu',
+
+	add_submenu_page(
+		$my_plugin_slug,
+		'各種設定',
+		'各種設定',
+		'read',
+		'option',
 		'donate_options_page'
 	);
+
+
+
 }
 
 /**
@@ -193,6 +220,8 @@ function donate_sumbit() {
 				)
 			);
 		}
+	} else{
+		echo "その他";
 	}
 }
 
@@ -288,5 +317,27 @@ function donate_submenu_page2() {
  * Caa
  */
 function donate_options_page() {
-	echo '<h2>「設定」内の「マイオプション」をクリックした時に表示される内容</h2>';
+	$api_key = get_option("donate_apikey", "");
+	if (isset($_POST["option"])){
+		$api_key = md5(mt_rand().time());
+		add_option("donate_apikey", $api_key);
+	}
+
+	echo '<h2>APIキーの発行</h2>';
+	echo "
+	<div class='wrap'>
+	<span> APIキー </span><span>$api_key</span>
+	<form method='post'>
+	<input type='hidden' name='api-key' value='$api_key'>
+	<br>
+	<input type='submit' value='リクエストを送信'>
+	<input type='hidden' name='option' value='1'>
+	</form>
+	</div>
+	";
+
+	echo "<hr>";
+
+	echo "APIを呼び出すときには、下記のヘッダを追加してください<br>";
+	echo "'X-API-KEY: $api_key'<br>";
 }
