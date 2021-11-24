@@ -87,7 +87,7 @@ function header_check($data){
 		}else{
 			return array(
 				"result" => false,
-				"message" => "Wrong API Key. $api_key => $post_api_key"
+				"message" => "Wrong API Key."
 			);
 		}
 	}else{
