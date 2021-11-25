@@ -78,7 +78,6 @@ function header_check($data){
 	
 	if (isset($header["x_api_key"])){
 		$post_api_key = $header["x_api_key"][0];
-		print_r($post_api_key);
 		if ($post_api_key == $api_key){
 			return array(
 				"result" => true,
