@@ -312,7 +312,100 @@ function donate_submenu_page1() {
  */
 function donate_submenu_page2() {
 	echo '<h2>寄付データエクスポート</h2>';
+	echo '<form method="post">';
+	echo '<input class="dt" type="text" id="date-from">～<input class="dt" type="text" id="date-to">';
+	echo '<input type="submit" value="エクスポート" >';
+	echo '<input type="hidden" name="csv_type" value="1">';
+	echo '</form>';
+	echo '<script>window.onload=function(){ jQuery(".dt").datepicker();}</script>';
+	?>
+<style>
+.ui-datepicker{
+	background: #F3F3F3 !important;
 }
+
+.ui-state-active
+, .ui-widget-content .ui-state-active
+, .ui-widget-header .ui-state-active
+, a.ui-button:active
+, .ui-button:active
+, .ui-button.ui-state-active:hover {
+   border: 1px solid #003eff !important;
+   background: #007fff !important;
+   font-weight: normal !important;
+   color: #ffffff !important;
+}
+.ui-datepicker-holiday a.ui-state-default{
+   border: 1px solid #ecc0c0;
+   background-color: #ffecec !important;
+   color: #ff0000 !important;
+}
+.ui-datepicker-holiday a.ui-state-active{
+   border: 1px solid #003eff !important;
+   background: #007fff !important;
+   font-weight: normal !important;
+   color: #ffffff !important;   
+}
+/* 日曜日のカラー設定 */
+.ui-datepicker-week-end:first-child a{
+   background-color: #ffecec;
+   color: #ff0000;
+}
+/* 土曜日のカラー設定 */
+.ui-datepicker-week-end:last-child a{
+   background-color: #eaeaff;
+   color: #0000ff;
+}
+</style>
+
+<?php
+}
+
+function donate_export_csv($from_date, $to_date) {
+
+    // ID, タイトルと拡張フィールド
+    $fields = array('ID','post_title','zip','pref','city','tel');
+    $fp = fopen('php://temp','r+');
+    $q = new WP_Query(array(
+        'orderby'=>'ID',
+        'order'=>'ASC',
+    ));
+
+    fputcsv($fp, $fields, ',', '"');
+    if ($q->have_posts()) :
+    while($q->have_posts()) : $q->the_post();
+            $data = array();
+        foreach ($fields as $fld) :
+        switch($fld) :
+        case 'ID' : $data[] = get_the_ID();break;
+        case 'post_title':$data[] = get_the_title(); break;
+        default :
+            // 拡張フィールド
+            $v = get_field($fld);
+            if (is_array($v)) :
+                $data[] = join($v,',');
+            else :
+                $data[] = $v;
+            endif ;
+        endswitch;
+        endforeach;
+        fputcsv($fp, $data, ',', '"');
+    endwhile;
+    endif;
+    wp_reset_postdata();
+
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename=export.csv');
+    rewind($fp);
+
+    while (($buf = fgets($fp)) !== false) :
+        echo mb_convert_encoding($buf,'SJIS-win',mb_internal_encoding());
+    endwhile;
+
+    fclose($fp);
+}
+
+
 
 /**
  * Caa
