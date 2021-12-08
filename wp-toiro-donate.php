@@ -82,7 +82,7 @@ function donate_add_pages() {
 		'寄付エクスポート',
 		'寄付エクスポート',
 		'read',
-		'exprot',
+		'donate_export',
 		'donate_submenu_page2'
 	);
 
@@ -222,7 +222,12 @@ function donate_sumbit() {
 			);
 		}
 	} else{
-		echo "その他";
+		if (isset($_POST["csv_type"]) && $_POST["csv_type"] == 1){
+			$from_date =  empty($_POST["date-from"]) ? date('Y-m-d', mktime(0, 0, 0, date("m")-1, date("d"), date("Y"))) : $_POST["date-from"];
+			$to_date =  empty($_POST["date-to"]) ? date('Y-m-d', mktime(0, 0, 0, date("m"), date("d"), date("Y"))) : $_POST["date-to"];
+			donate_export_csv($from_date, $to_date);
+			exit;
+		}
 	}
 }
 
@@ -302,18 +307,16 @@ function donate_submenu_page1() {
 	$main = str_replace("%TBODY%", $tbody, $main);
 	echo $main;	
 
-
-
-
 }
 
 /**
  * Baa
  */
 function donate_submenu_page2() {
+
 	echo '<h2>寄付データエクスポート</h2>';
 	echo '<form method="post">';
-	echo '<input class="dt" type="text" id="date-from">～<input class="dt" type="text" id="date-to">';
+	echo '<input class="dt" type="text" name="date-from" id="date-from">～<input class="dt" type="text" name="date-to" id="date-to">';
 	echo '<input type="submit" value="エクスポート" >';
 	echo '<input type="hidden" name="csv_type" value="1">';
 	echo '</form>';
@@ -362,45 +365,42 @@ function donate_submenu_page2() {
 }
 
 function donate_export_csv($from_date, $to_date) {
-
+	global $wpdb;
     // ID, タイトルと拡張フィールド
-    $fields = array('ID','post_title','zip','pref','city','tel');
+
+	$fields = array(
+		"id", "donate_project_id","project_name", "project_code". 
+		"payment_id", "donor_email", "donor_name", 
+		"donor_zip", "donor_address", "donor_tel", "token", "price", "tax", 
+		"charge", "payment_type_id", "payment_type",
+		"payment_date", "del_flag", "creator", 
+		"create_date", "moderator", "update_date");
     $fp = fopen('php://temp','r+');
-    $q = new WP_Query(array(
-        'orderby'=>'ID',
-        'order'=>'ASC',
-    ));
+	fputcsv($fp, $fields, ',', '"');
 
-    fputcsv($fp, $fields, ',', '"');
-    if ($q->have_posts()) :
-    while($q->have_posts()) : $q->the_post();
-            $data = array();
-        foreach ($fields as $fld) :
-        switch($fld) :
-        case 'ID' : $data[] = get_the_ID();break;
-        case 'post_title':$data[] = get_the_title(); break;
-        default :
-            // 拡張フィールド
-            $v = get_field($fld);
-            if (is_array($v)) :
-                $data[] = join($v,',');
-            else :
-                $data[] = $v;
-            endif ;
-        endswitch;
-        endforeach;
-        fputcsv($fp, $data, ',', '"');
-    endwhile;
-    endif;
-    wp_reset_postdata();
-
+	$query = "SELECT d.*, p.project_name, p.project_code, t.payment_type as payment_name
+		FROM wp_donate AS d
+		LEFT JOIN wp_donate_project as p on (p.id = d.donate_project_id)
+		LEFT JOIN wp_payment_type as t on (t.id = d.payment_type_id)
+		WHERE d.del_flag = 0 AND payment_date between %s AND %s";
+	$results = $wpdb->get_results( $wpdb->prepare( $query, $from_date, $to_date ) );
+	$results = $wpdb->get_results( $query );
+	
+	foreach($results as $row) {
+		$data = array();
+		foreach($fields as $field){
+			$data[] = $row[$field];
+		}
+		fputcsv($fp, $data, ',', '"');
+	}
+    
     header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename=export.csv');
+    header('Content-Disposition: attachment; filename=donate_export.csv');
     rewind($fp);
 
-    while (($buf = fgets($fp)) !== false) :
+    while (($buf = fgets($fp)) !== false) {
         echo mb_convert_encoding($buf,'SJIS-win',mb_internal_encoding());
-    endwhile;
+	}
 
     fclose($fp);
 }
