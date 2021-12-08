@@ -366,7 +366,6 @@ function donate_submenu_page2() {
 
 function donate_export_csv($from_date, $to_date) {
 	global $wpdb;
-    // ID, タイトルと拡張フィールド
 
 	$fields = array(
 		"id", "donate_project_id","project_name", "project_code". 
@@ -375,34 +374,35 @@ function donate_export_csv($from_date, $to_date) {
 		"charge", "payment_type_id", "payment_type",
 		"payment_date", "del_flag", "creator", 
 		"create_date", "moderator", "update_date");
-    $fp = fopen('php://temp','r+');
+	
+		$fp = fopen('php://temp','r+');
 	fputcsv($fp, $fields, ',', '"');
 
-	$query = "SELECT d.*, p.project_name, p.project_code, t.payment_type as payment_name
-		FROM wp_donate AS d
-		LEFT JOIN wp_donate_project as p on (p.id = d.donate_project_id)
-		LEFT JOIN wp_payment_type as t on (t.id = d.payment_type_id)
-		WHERE d.del_flag = 0 AND payment_date between %s AND %s";
-	$results = $wpdb->get_results( $wpdb->prepare( $query, $from_date, $to_date ) );
-	$results = $wpdb->get_results( $query );
-	
+	$sql = sprintf("SELECT d.*, p.project_name, p.project_code, t.payment_type as payment_name FROM wp_donate AS d "
+		. "LEFT JOIN wp_donate_project as p on (p.id = d.donate_project_id) "
+		. "LEFT JOIN wp_payment_type as t on (t.id = d.payment_type_id) "
+		. "WHERE d.del_flag = 0 AND payment_date between '%s' AND '%s';", $from_date, $to_date );
+
+	$results = $wpdb->get_results( $sql );
+
 	foreach($results as $row) {
 		$data = array();
+		$rows = (array)$row;
 		foreach($fields as $field){
-			$data[] = $row[$field];
+			$data[] = $rows[$field];
 		}
 		fputcsv($fp, $data, ',', '"');
 	}
-    
-    header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename=donate_export.csv');
-    rewind($fp);
 
-    while (($buf = fgets($fp)) !== false) {
-        echo mb_convert_encoding($buf,'SJIS-win',mb_internal_encoding());
+	header('Content-Type: text/csv');
+	header('Content-Disposition: attachment; filename=donate_export.csv');
+	rewind($fp);
+
+	while (($buf = fgets($fp)) !== false) {
+		echo mb_convert_encoding($buf,'SJIS-win',mb_internal_encoding());
 	}
 
-    fclose($fp);
+	fclose($fp);
 }
 
 
