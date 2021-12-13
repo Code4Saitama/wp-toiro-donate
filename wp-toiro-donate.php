@@ -412,21 +412,50 @@ function donate_export_csv($from_date, $to_date) {
  */
 function donate_options_page() {
 	$api_key = get_option("donate_apikey", "");
+	$default = "";
+	$pay_jp_private_key = get_option("pay_jp_private_key", $default);
+	$pay_jp_public_key = get_option("pay_jp_public_key", $default);
+	$pay_jp_token = get_option("pay_jp_token", $default);
+
 	if (isset($_POST["option"])){
-		$api_key = md5(mt_rand().time());
+		$api_key = empty($api_key) ?  md5(mt_rand().time()) : $api_key;
 		add_option("donate_apikey", $api_key);
+
+		if (!empty($_POST["pay_jp_private_key"])){
+			$pay_jp_private_key = $_POST["pay_jp_private_key"];
+			add_option("pay_jp_private_key", $_POST["pay_jp_private_key"]);
+		}
+
+		if (!empty($_POST["pay_jp_public_key"])){
+			$pay_jp_public_key = $_POST["pay_jp_public_key"];
+			add_option("pay_jp_public_key", $_POST["pay_jp_public_key"]);
+		}
+
+		if (!empty($_POST["pay_jp_token"])){
+			$pay_jp_token = $_POST["pay_jp_token"];
+			add_option("pay_jp_token", $_POST["pay_jp_token"]);
+		}
+
 	}
 
 	echo '<h2>APIキーの発行</h2>';
 	echo "
 	<div class='wrap'>
-	<span> APIキー </span><span>$api_key</span>
-	<form method='post'>
-	<input type='hidden' name='api-key' value='$api_key'>
+	
+	<form method='post' class='api'>
+	<p><span> APIキー </span><input type='text' name='api_key' value='$api_key' readonly></p>
+	<p><span> Pay.jp 秘密鍵 </span><input type='text' name='pay_jp_private_key' value='$pay_jp_private_key'></p>
+	<p><span> Pay.jp 公開鍵 </span><input type='text' name='pay_jp_public_key' value='$pay_jp_public_key'></p>
+	<p><span> Pay.jp トークン </span><input type='text' name='pay_jp_token' value='$pay_jp_token'></p>
 	<br>
-	<input type='submit' value='リクエストを送信'>
+	<input type='submit' value='保存'>
 	<input type='hidden' name='option' value='1'>
 	</form>
+	<style>
+	.api input {
+		width: 300px;
+	}
+	</style>
 	</div>
 	";
 
