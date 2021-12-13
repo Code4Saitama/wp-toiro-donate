@@ -313,55 +313,69 @@ function donate_submenu_page1() {
  * Baa
  */
 function donate_submenu_page2() {
-
+	$dir = plugin_dir_path( __FILE__ );
+	$js_file = $dir . "date-ja.js";
+	echo "<script>";
+	echo file_get_contents($js_file);
+	echo "</script>";
 	echo '<h2>寄付データエクスポート</h2>';
 	echo '<form method="post">';
-	echo '<input class="dt" type="text" name="date-from" id="date-from">～<input class="dt" type="text" name="date-to" id="date-to">';
+	echo '<span>決済日付</span><input class="dt" type="text" name="date-from" id="date-from">～<input class="dt" type="text" name="date-to" id="date-to">';
 	echo '<input type="submit" value="エクスポート" >';
 	echo '<input type="hidden" name="csv_type" value="1">';
 	echo '</form>';
-	echo '<script>window.onload=function(){ jQuery(".dt").datepicker();}</script>';
+	echo '<script>window.onload=function(){ jQuery(".dt").datepicker(
+		{ 
+			showButtonPanel: true,
+			changeMonth: true,
+			changeYear: true,
+			firstDay: 0,
+		}
+	);}</script>';
 	?>
-<style>
-.ui-datepicker{
-	background: #F3F3F3 !important;
-}
+	<style>
+		.dt{
+			width: 100px;
+		}
+		.ui-datepicker{
+			background: #F3F3F3 !important;
+		}
 
-.ui-state-active
-, .ui-widget-content .ui-state-active
-, .ui-widget-header .ui-state-active
-, a.ui-button:active
-, .ui-button:active
-, .ui-button.ui-state-active:hover {
-   border: 1px solid #003eff !important;
-   background: #007fff !important;
-   font-weight: normal !important;
-   color: #ffffff !important;
-}
-.ui-datepicker-holiday a.ui-state-default{
-   border: 1px solid #ecc0c0;
-   background-color: #ffecec !important;
-   color: #ff0000 !important;
-}
-.ui-datepicker-holiday a.ui-state-active{
-   border: 1px solid #003eff !important;
-   background: #007fff !important;
-   font-weight: normal !important;
-   color: #ffffff !important;   
-}
-/* 日曜日のカラー設定 */
-.ui-datepicker-week-end:first-child a{
-   background-color: #ffecec;
-   color: #ff0000;
-}
-/* 土曜日のカラー設定 */
-.ui-datepicker-week-end:last-child a{
-   background-color: #eaeaff;
-   color: #0000ff;
-}
-</style>
+		.ui-state-active
+		, .ui-widget-content .ui-state-active
+		, .ui-widget-header .ui-state-active
+		, a.ui-button:active
+		, .ui-button:active
+		, .ui-button.ui-state-active:hover {
+			border: 1px solid #003eff !important;
+			background: #007fff !important;
+			font-weight: normal !important;
+			color: #ffffff !important;
+		}
+		.ui-datepicker-holiday a.ui-state-default{
+			border: 1px solid #ecc0c0;
+			background-color: #ffecec !important;
+			color: #ff0000 !important;
+		}
+		.ui-datepicker-holiday a.ui-state-active{
+			border: 1px solid #003eff !important;
+			background: #007fff !important;
+			font-weight: normal !important;
+			color: #ffffff !important;   
+		}
+		/* 日曜日のカラー設定 */
+		.ui-datepicker-week-end:first-child a{
+			background-color: #ffecec;
+			color: #ff0000;
+		}
+		/* 土曜日のカラー設定 */
+		.ui-datepicker-week-end:last-child a{
+			background-color: #eaeaff;
+			color: #0000ff;
+		}
+	</style>
 
-<?php
+	<?php
 }
 
 function donate_export_csv($from_date, $to_date) {
