@@ -12,8 +12,28 @@
  * @package         Wp_Toiro_Donate
  */
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+// 依存チェック
+ register_activation_hook(__FILE__, function() {
+  // 依存プラグインが有効化されていない時は、エラーで処理を中断する
+  if( is_bool(array_search('simple-pay-jp-payment/simple-payjp-payment.php', get_option('active_plugins'))) ) {
+    echo '寄付プラグインの動作には、Simple PAY.JP Payment プラグインが必要です。';
+    exit();
+  }
+});
+
+// Simple PAY.JP Payment プラグインの読み込み
+
+if (is_file(plugin_dir_path( __FILE__ ) . '../simple-pay-jp-payment/simple-payjp-payment.php')){
+//	require(plugin_dir_path( __FILE__ ) . '../simple-pay-jp-payment/simple-payjp-payment.php');
+	require_once(plugin_dir_path( __FILE__ ) . "donor-view.php");
+	require_once(plugin_dir_path( __FILE__ ) . "regist-paydata.php");
+}
+
 // Your code starts here.
 include(plugin_dir_path( __FILE__ ) . 'donate-api.php');
+
 // DBのテーブル自動生成はいったん凍結
 //include(plugin_dir_path( __FILE__ ) . 'db_init.php');
 
@@ -95,9 +115,6 @@ function donate_add_pages() {
 		'option',
 		'donate_options_page'
 	);
-
-
-
 }
 
 /**

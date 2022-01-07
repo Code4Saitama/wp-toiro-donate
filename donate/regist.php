@@ -22,7 +22,7 @@
           <h1>ページ1：寄付者情報入力画面</h1>
 
           <form
-            action="page2-pay.php"
+            action="payment.php"
             method="POST"
           >
             <div class="mb-3">
