@@ -277,8 +277,11 @@ function simplepayjppayment_handler($atts)
 }
 
 wp_enqueue_script("simple-payjp-payment-javascript", plugins_url( 'js/simple-payjp-payment.js', __FILE__ ), array("jquery", "jquery-core"), false, true);
+wp_enqueue_script("db-post-javascript", plugins_url( 'js/db-post.js', __FILE__ ), array("jquery", "jquery-core"), false, true);
+ 
 
 // shortcode
+
 function simplepayjppayment_redirect()
 {
     if (! empty($_POST) && ! empty($_POST[ 'form-id' ])) {
@@ -337,6 +340,7 @@ function simplepayjppayment_redirect()
         add_shortcode('simple-payjp-payment', 'simplepayjppayment_handler');
     }
 }
+
 add_action('template_redirect', 'simplepayjppayment_redirect', 10000);
 
 
@@ -344,6 +348,6 @@ function debug_log($str) {
   $log = "[" . date("Y/M/d H:m:i") . "]";
   $log .= $str;
   $log .= "\n\n";
-  file_put_contents("/tmp/debug.log",
+  file_put_contents("/var/www/wordpress/wp-content/plugins/simple-pay-jp-payment/debug.log",
   $log, FILE_APPEND);
 }
