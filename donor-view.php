@@ -3,10 +3,12 @@
  * 寄付画面
  */
 
-function simplepayjppayment_handle_form_submitted() {
+function donor_simplepayjppayment_handle_form_submitted() {
   if ( !isset( $_POST['payjp-token'] ) ) {
       return array( false, esc_html__( 'token is empty', 'simple-payjp-payment' ) );
   }
+
+  error_log( "simplepayjppayment_handle_form_submitted実行中\n", 3, "/Applications/MAMP/htdocs/wp-content/plugins/wp-toiro-donate/error_log");
 
   $safe_amount = 0;
   $safe_plan_id = '';
@@ -74,8 +76,9 @@ function simplepayjppayment_handle_form_submitted() {
 /**
  * Pay.jpを使って1回支払う
  */
-function simplepayjppayment_create_payment($secret_key, $token, $amount, $currency, $description)
+function donor_simplepayjppayment_create_payment($secret_key, $token, $amount, $currency, $description)
 {
+  error_log( "simplepayjppayment_create_payment実行中\n", 3, "/Applications/MAMP/htdocs/wp-content/plugins/wp-toiro-donate/error_log");
     try {
         Payjp\Payjp::setApiKey($secret_key);
         $result = Payjp\Charge::create(array(
@@ -109,8 +112,10 @@ function simplepayjppayment_create_payment($secret_key, $token, $amount, $curren
 /**
  *  寄付画面表示
  */
-function simplepayjppayment_handler($atts)
+function donor_simplepayjppayment_handler($atts)
 {
+  error_log( "simplepayjppayment_handler実行中\n", 3, "/Applications/MAMP/htdocs/wp-content/plugins/wp-toiro-donate/error_log");
+
     simplepayjppayment_security_migration();
 
     $a = shortcode_atts(array(
@@ -141,7 +146,7 @@ function simplepayjppayment_handler($atts)
 
     $safe_form_id = sanitize_text_field($a['form-id']);
     if ($safe_form_id === "") {
-        return esc_html__('Invalid form-id', 'simple-payjp-payment');
+        return esc_html__('Invalid form-id test', 'simple-payjp-payment');
     }
 
     $name_enabled = $a['name'] === 'yes' ? true : false;
@@ -168,7 +173,7 @@ function simplepayjppayment_handler($atts)
     } else {
       $api_url = "http://";
     }
-    $api_url .= $_SERVER['SERVER_NAME'] . "/wp-json/donate/v1/projects";
+    $api_url .= $_SERVER['HTTP_HOST'] . "/wp-json/donate/v1/projects";
     $safe_project_id = intval($a["project-id"]);
     if ($safe_project_id != 0) {
       $api_url .= $api_base_url . "/" . $safe_project_id;
@@ -187,7 +192,7 @@ function simplepayjppayment_handler($atts)
     $api_response_json = json_decode($api_response, true);
 
     $api_has_error = false;
-    if ($errno != CURLE_OK || $curl_result["http_code"] != 200 || $api_response_json == "") {
+    if ($errno != 'CURL_OK' || $curl_result["http_code"] != 200 || $api_response_json == "") {
       $api_has_error = true;
     }
 
@@ -207,6 +212,12 @@ function simplepayjppayment_handler($atts)
     if ($api_has_error) {
       return "エラーが発生しました。";
     }
+    
+
+    // test
+    // return "テスト。$domain";
+    //error_log("エラー！", 3, ”/Applications/MAMP/htdocs/wp-content/plugins/wp-toiro-donate/error_log”)；
+
     ?>
 
   <?php ob_start(); ?>
@@ -245,17 +256,19 @@ function simplepayjppayment_handler($atts)
                 <span class="errorMessage messageBox empty" aria-hidden="true">必須入力です。</span>
                 <span class="errorMessage messageBox pattern" aria-hidden="true">正しい形式で入力してください。（09999-9999-9999）</span>
               </span>
-              <br /><label for="simplepayjppayment-projest">プロジェクト:</label>
+              <br /><label for="simplepayjppayment-project">プロジェクト:</label>
           <?php if ($safe_project_id == 0) { ?>
           <select id="simplepayjppayment-project" name="donor-project-id">
             <?php foreach ($projects as $project) { ?>
               <option value="<?php echo esc_attr($project["id"]); ?>"><?php echo esc_attr($project["name"]); ?></option>
             <?php } ?>
           </select>
-          <?php } else { ?>
+          <?php 
+        } else { ?>
             <?php echo esc_attr($projects[0]["name"]); ?>
             <input name="donor-project-id" value="<?php echo esc_attr($projects[0]["name"]); ?>" type="hidden">
-          <?php } ?>
+          <?php 
+        } ?>
           <script src="https://checkout.pay.jp/" class="payjp-button" data-key="<?php
           echo esc_attr($public_key); ?>"></script>
           <?php if ($safe_amount != 0) { ?>
@@ -277,18 +290,19 @@ function simplepayjppayment_handler($atts)
 }
 
 wp_enqueue_script("simple-payjp-payment-javascript", plugins_url( 'js/simple-payjp-payment.js', __FILE__ ), array("jquery", "jquery-core"), false, true);
-wp_enqueue_script("db-post-javascript", plugins_url( 'js/db-post.js', __FILE__ ), array("jquery", "jquery-core"), false, true);
- 
+#wp_enqueue_script("db-post-javascript", plugins_url( 'js/db-post.js', __FILE__ ), array("jquery", "jquery-core"), false, true);
 
 // shortcode
 
-function simplepayjppayment_redirect()
+function donor_simplepayjppayment_redirect()
 {
+  error_log( "redirect実行中\n", 3, "/Applications/MAMP/htdocs/wp-content/plugins/wp-toiro-donate/error_log");
     if (! empty($_POST) && ! empty($_POST[ 'form-id' ])) {
         session_start();
+        error_log( "redirect sessionstart\n", 3, "/Applications/MAMP/htdocs/wp-content/plugins/wp-toiro-donate/error_log");
         if (isset($_SESSION["key"], $_POST["key"]) && $_SESSION["key"] == $_POST["key"]) {
             unset($_SESSION["key"]);
-            list($result, $message, $pay_result) = simplepayjppayment_handle_form_submitted();
+            list($result, $message, $pay_result) = donor_simplepayjppayment_handle_form_submitted();
             if ($result) {
               $param = array();
               $timestamp = new DateTime('now', new DateTimeZone('Asia/Tokyo'));
@@ -320,7 +334,7 @@ function simplepayjppayment_redirect()
                 var_dump($param);
                 $param_dump = ob_get_clean();
                 echo "<pre>$param_dump</pre>";
-                echo "支払いが完了しました。";
+                echo "支払いが完了しました。toiro-donate";
             } else {
                 do_action('simplepayjppayment_result_ng');
                 if (! empty($_POST[ 'result-ng' ])) {
@@ -337,12 +351,11 @@ function simplepayjppayment_redirect()
         }
     } else {
         session_start();
-        add_shortcode('simple-payjp-payment', 'simplepayjppayment_handler');
+        add_shortcode('donor_simple-payjp-payment', 'donor_simplepayjppayment_handler');
     }
 }
 
-add_action('template_redirect', 'simplepayjppayment_redirect', 10000);
-
+add_action('template_redirect', 'donor_simplepayjppayment_redirect', 10000);
 
 function debug_log($str) {
   $log = "[" . date("Y/M/d H:m:i") . "]";
