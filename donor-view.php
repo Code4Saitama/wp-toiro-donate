@@ -168,7 +168,7 @@ function simplepayjppayment_handler($atts)
     } else {
       $api_url = "http://";
     }
-    $api_url .= $_SERVER['SERVER_NAME'] . "/wp-json/donate/v1/projects";
+    $api_url .= $_SERVER['HTTP_HOST'] . "/wp-json/donate/v1/projects";
     $safe_project_id = intval($a["project-id"]);
     if ($safe_project_id != 0) {
       $api_url .= $api_base_url . "/" . $safe_project_id;
