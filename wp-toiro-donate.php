@@ -35,7 +35,8 @@ if (is_file(plugin_dir_path( __FILE__ ) . '../simple-pay-jp-payment/simple-payjp
 include(plugin_dir_path( __FILE__ ) . 'donate-api.php');
 
 // DBのテーブル自動生成はいったん凍結
-//include(plugin_dir_path( __FILE__ ) . 'db_init.php');
+include(plugin_dir_path( __FILE__ ) . 'db_init.php');
+$donateTable = new DonateTable();
 
 // 管理メニューにフックを登録.
 add_action( 'admin_menu', 'donate_add_pages' );
@@ -69,12 +70,12 @@ function donate_add_pages() {
 	);
 
 	/*
-	add_submenu_page( 
-		$parent_slug, 
-		$page_title, 
-		$menu_title, 
-		$capability, 
-		$menu_slug, 
+	add_submenu_page(
+		$parent_slug,
+		$page_title,
+		$menu_title,
+		$capability,
+		$menu_slug,
 		$function
 	);
 	*/
@@ -123,7 +124,7 @@ function donate_add_pages() {
 function donate_menu_index() {
 	global $wpdb;
 	$dir = plugin_dir_path( __FILE__ );
-	$form_file = $dir . "form.html"; 
+	$form_file = $dir . "form.html";
 	$tbody_file = $dir . "tbody.html";
 	$tbody_tpl = file_get_contents($tbody_file);
 	$main = file_get_contents($form_file);
@@ -163,11 +164,11 @@ function donate_menu_index() {
 			$row_data = str_replace('%CREATE_DATE%', $create_date, $row_data);
 			$row_data = str_replace('%UPDATE_DATE%', $update_date, $row_data);
 			$tbody .= $row_data;
-			
+
 		}
 	}
 	$main = str_replace("%TBODY%", $tbody, $main);
-	echo $main;	
+	echo $main;
 }
 
 add_action( 'admin_init', 'donate_sumbit' );
@@ -188,7 +189,7 @@ function donate_sumbit() {
 				'moderator' => get_current_user_id(),
 				'update_date' => current_time('mysql'),
 			),
-			array( 'ID' =>  $id ), 
+			array( 'ID' =>  $id ),
 		);
 
 
@@ -203,7 +204,7 @@ function donate_sumbit() {
 		$create_date = current_time('mysql');
 		$moderator = get_current_user_id();
 		$update_date = current_time('mysql');
-		
+
 
 		if (!empty($_POST["id"])){
 			$id = $_POST["id"];
@@ -219,10 +220,10 @@ function donate_sumbit() {
 					'moderator' => get_current_user_id(),
 					'update_date' => current_time('mysql'),
 				),
-				array( 'ID' =>  $id ), 
+				array( 'ID' =>  $id ),
 			);
 		}else{
-			$wpdb->insert( 
+			$wpdb->insert(
 				"wp_donate_project",
 				array(
 					'project_code' => $project_code,
@@ -282,7 +283,7 @@ function donate_submenu_page1() {
 			$id = $row->id;
 			$donate_project_id = $row->donate_project_id;
 			$payment_id = $row->payment_id;
-			$donor_email = $row->donor_email;		
+			$donor_email = $row->donor_email;
 			$donor_name = $row->donor_name;
 			$donor_zip = $row->donor_zip;
 			$donor_address = $row->donor_address;
@@ -300,7 +301,7 @@ function donate_submenu_page1() {
 			$update_date = $row->update_date;
 			$project_name = $row->project_name;
 			$project_code = $row->project_code;
-			
+
 			$row_data = $tbody_tpl;
 			$row_data = str_replace('%I%', ++$i, $row_data);
 			$row_data = str_replace('%ID%', $id, $row_data);
@@ -318,11 +319,11 @@ function donate_submenu_page1() {
 			$row_data = str_replace('%TAX%', $tax, $row_data);
 			$row_data = str_replace('%PAYMENT_TYPE%', $payment_type, $row_data);
 			$tbody .= $row_data;
-			
+
 		}
 	}
 	$main = str_replace("%TBODY%", $tbody, $main);
-	echo $main;	
+	echo $main;
 
 }
 
@@ -342,7 +343,7 @@ function donate_submenu_page2() {
 	echo '<input type="hidden" name="csv_type" value="1">';
 	echo '</form>';
 	echo '<script>window.onload=function(){ jQuery(".dt").datepicker(
-		{ 
+		{
 			showButtonPanel: true,
 			changeMonth: true,
 			changeYear: true,
@@ -378,7 +379,7 @@ function donate_submenu_page2() {
 			border: 1px solid #003eff !important;
 			background: #007fff !important;
 			font-weight: normal !important;
-			color: #ffffff !important;   
+			color: #ffffff !important;
 		}
 		/* 日曜日のカラー設定 */
 		.ui-datepicker-week-end:first-child a{
@@ -399,13 +400,13 @@ function donate_export_csv($from_date, $to_date) {
 	global $wpdb;
 
 	$fields = array(
-		"id", "donate_project_id","project_name", "project_code". 
-		"payment_id", "donor_email", "donor_name", 
-		"donor_zip", "donor_address", "donor_tel", "token", "price", "tax", 
+		"id", "donate_project_id","project_name", "project_code".
+		"payment_id", "donor_email", "donor_name",
+		"donor_zip", "donor_address", "donor_tel", "token", "price", "tax",
 		"charge", "payment_type_id", "payment_type",
-		"payment_date", "del_flag", "creator", 
+		"payment_date", "del_flag", "creator",
 		"create_date", "moderator", "update_date");
-	
+
 		$fp = fopen('php://temp','r+');
 	fputcsv($fp, $fields, ',', '"');
 
@@ -472,7 +473,7 @@ function donate_options_page() {
 	echo '<h2>APIキーの発行</h2>';
 	echo "
 	<div class='wrap'>
-	
+
 	<form method='post' class='api'>
 	<p><span> APIキー </span><input type='text' name='api_key' value='$api_key' readonly></p>
 	<p><span> Pay.jp 秘密鍵 </span><input type='text' name='pay_jp_private_key' value='$pay_jp_private_key'></p>
