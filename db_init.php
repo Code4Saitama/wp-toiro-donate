@@ -90,21 +90,17 @@ _SQL_;
 		// プラグインが無効となったときの処理
 		global $wpdb;
 		//DBのバージョン
-		//現在のDBバージョン取得
-		$installed_ver = get_option( 'donate_meta_version' );
-		// DBバージョンが違ったら作成
-		if( $installed_ver !=  $this->donate_db_version ) {
-			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-			//SQL文をここに直接張ってください。
-			$sql = <<<_SQL_
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		//SQL文をここに直接張ってください。
+		$sql = <<<_SQL_
 DROP TABLE IF EXISTS wp_donate_project;
 DROP TABLE IF EXISTS wp_donate;
 DROP TABLE IF EXISTS wp_payment_type;
 _SQL_;
-			//オプションにDBバージョン保存
-			update_option('donate_meta_version', $this->donate_db_version);
-			dbDelta( $sql );
-		}
+		//オプションにDBバージョン削除
+		delete_option('donate_meta_version');
+		dbDelta( $sql );
+
 	}
 
 }
