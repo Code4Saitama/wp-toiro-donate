@@ -1,21 +1,21 @@
 <?php
 
- class DonateTable {
-    //プラグインのテーブル名
+class DonateTable {
+		//プラグインのテーブル名
 	var $donate_db_version = '1.1';
 	var $table_name;
 
-    public function __construct()
-    {
-        global $wpdb;
-        // 接頭辞（wp_）を付けてテーブル名を設定
-        $this->table_name1 = 'wp_donate_project';
-        $this->table_name2 = 'wp_donate';
+	public function __construct()
+	{
+		global $wpdb;
+		// 接頭辞（wp_）を付けてテーブル名を設定
+		$this->table_name1 = 'wp_donate_project';
+		$this->table_name2 = 'wp_donate';
 		$this->table_name3 = 'wp_payment_type';
-        // プラグイン有効かしたとき実行
-        register_activation_hook(__FILE__, array($this, 'donate_activate'));
+		// プラグイン有効かしたとき実行
+		register_activation_hook(__FILE__, array($this, 'donate_activate'));
 		register_deactivation_hook( __FILE__, array($this, 'donate_deactivate'));
-    }
+	}
 
 	function donate_activate() {
 		global $wpdb;
@@ -78,11 +78,16 @@ replace into wp_payment_type values
 (2,"現金", 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (3,"口座振込　", 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (4,"Paypay", 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
-
 _SQL_;
 			//オプションにDBバージョン保存
 			update_option('donate_meta_version', $this->donate_db_version);
-			dbDelta( $sql );
+
+			$queries = explode(";", $sql);
+			foreach ($queries as $qry){
+				if (!empty($qry){
+					$wpdb->query($qry);
+				}
+			}
 		}
 	}
 
@@ -99,7 +104,12 @@ DROP TABLE IF EXISTS wp_payment_type;
 _SQL_;
 		//オプションにDBバージョン削除
 		delete_option('donate_meta_version');
-		dbDelta( $sql );
+		$queries = explode(";", $sql);
+		foreach ($queries as $qry){
+			if (!empty($qry){
+				$wpdb->query($qry);
+			}
+		}
 
 	}
 
