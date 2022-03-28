@@ -1,7 +1,7 @@
 <?php
 
 class DonateTable {
-		//プラグインのテーブル名
+	//プラグインのテーブル名
 	var $donate_db_version = '1.1';
 	var $table_name;
 
@@ -84,7 +84,7 @@ _SQL_;
 
 			$queries = explode(";", $sql);
 			foreach ($queries as $qry){
-				if (!empty($qry){
+				if (!empty($qry)){
 					$wpdb->query($qry);
 				}
 			}
@@ -106,7 +106,7 @@ _SQL_;
 		delete_option('donate_meta_version');
 		$queries = explode(";", $sql);
 		foreach ($queries as $qry){
-			if (!empty($qry){
+			if (!empty($qry)){
 				$wpdb->query($qry);
 			}
 		}
