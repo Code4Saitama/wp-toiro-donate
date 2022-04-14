@@ -114,4 +114,3 @@ _SQL_;
 	}
 
 }
-$donate = new DonateTable;
