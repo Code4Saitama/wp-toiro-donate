@@ -34,8 +34,9 @@ if (is_file(plugin_dir_path( __FILE__ ) . '../simple-pay-jp-payment/simple-payjp
 // Your code starts here.
 include(plugin_dir_path( __FILE__ ) . 'donate-api.php');
 
-// DBのテーブル自動生成はいったん凍結
+// DBのテーブル自動生成
 include(plugin_dir_path( __FILE__ ) . 'db_init.php');
+$donate = new DonateTable();
 
 // 管理メニューにフックを登録.
 add_action( 'admin_menu', 'donate_add_pages' );
