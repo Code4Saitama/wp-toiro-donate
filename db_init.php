@@ -7,6 +7,7 @@ class DonateTable {
 
 	public function __construct()
 	{
+		error_log("DonateTable construct", 3 ,"/tmp/don.log");
 		global $wpdb;
 		// 接頭辞（wp_）を付けてテーブル名を設定
 		$this->table_name1 = 'wp_donate_project';
@@ -18,6 +19,7 @@ class DonateTable {
 	}
 
 	function donate_activate() {
+		error_log("DonateTable activate", 3 ,"/tmp/don.log");
 		global $wpdb;
 		//DBのバージョン
 		//現在のDBバージョン取得
@@ -92,6 +94,7 @@ _SQL_;
 	}
 
 	function donate_deactivate() {
+		error_log("DonateTable deactivate", 3 ,"/tmp/don.log");
 		// プラグインが無効となったときの処理
 		global $wpdb;
 		//DBのバージョン
