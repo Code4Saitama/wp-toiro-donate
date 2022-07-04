@@ -88,7 +88,7 @@ print_r($result);
           </div>
 
           <a
-            href="/wp-content/plugins/simple-pay-jp-payment/mock/page1-inputPersonalInfo.php"
+            href="/wp-content/plugins/social-project-donation-with-payjp/mock/page1-inputPersonalInfo.php"
             >最初に戻る</a
           >
         </div>
