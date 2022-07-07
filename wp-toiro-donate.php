@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name:     Wp Toiro Donate
- * Plugin URI:      https://wwww.github.com/
- * Description:     Torio Donataion
- * Author:          MapQuest Solutions LLC.
- * Author URI:      http://www.github.com/mq-sol/
- * Text Domain:     wp-toiro-donate
+ * Plugin Name:     Social Project Donation Management
+ * Plugin URI:      https://github.com/Code4Saitama/wp-toiro-donate
+ * Description:     Toiro Donation
+ * Author:          NPO-toiro-commune-designing
+ * Author URI:      https://github.com/NPO-toiro-commune-designing
+ * Text Domain:     social-project-donation-management
  * Domain Path:     /languages
  * Version:         0.1.0
  *
@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // 依存チェック
 register_activation_hook(__FILE__, function() {
   // 依存プラグインが有効化されていない時は、エラーで処理を中断する
-  if( is_bool(array_search('simple-pay-jp-payment/simple-payjp-payment.php', get_option('active_plugins'))) ) {
-    echo '寄付プラグインの動作には、Simple PAY.JP Payment プラグインが必要です。';
+  if( is_bool(array_search('social-project-donation-with-payjp/simple-payjp-payment.php', get_option('active_plugins'))) ) {
+    echo '寄付プラグインの動作には、Social Project Donation with PAY.JP プラグインが必要です。';
     exit();
   }
 });
@@ -27,7 +27,7 @@ register_activation_hook(__FILE__, function() {
 global $donate_db_version;
 $donate_db_version = 1.1;
 
-if (is_file(plugin_dir_path( __FILE__ ) . '../simple-pay-jp-payment/simple-payjp-payment.php')){
+if (is_file(plugin_dir_path( __FILE__ ) . '../social-project-donation-with-payjp/simple-payjp-payment.php')){
 	require_once(plugin_dir_path( __FILE__ ) . "donor-view.php");
 	require_once(plugin_dir_path( __FILE__ ) . "regist-paydata.php");
 }

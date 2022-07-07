@@ -12,7 +12,7 @@
 
 
     // 寄付結果表示ページにリダイレクト
-    //header("Location: /wp-content/plugins/simple-pay-jp-payment/mock/page3-thankyou.php");
+    //header("Location: /wp-content/plugins/social-project-donation-with-payjp/mock/page3-thankyou.php");
 ?>
 
 <!DOCTYPE html>
